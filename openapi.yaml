@@ -1,0 +1,437 @@
+openapi: 3.0.3
+info:
+  title: Todo App API
+  description: |
+    API documentation for the Todo App backend powered by Supabase.
+    
+    This API provides endpoints for user authentication and todo management.
+    All endpoints require authentication except for signup and login.
+    
+    ## Authentication
+    All authenticated requests require a Bearer token in the Authorization header:
+    ```
+    Authorization: Bearer <access_token>
+    ```
+    
+    The access token is obtained through the authentication endpoints.
+    
+    ## Row Level Security
+    All todo operations are protected by Row Level Security (RLS) policies,
+    ensuring users can only access their own todos.
+  version: 1.0.0
+  contact:
+    name: Todo App Support
+    email: support@example.com
+
+servers:
+  - url: https://{project_ref}.supabase.co
+    description: Supabase API Server
+    variables:
+      project_ref:
+        default: your-project-ref
+        description: Your Supabase project reference
+
+tags:
+  - name: Authentication
+    description: User authentication endpoints
+  - name: Todos
+    description: Todo management endpoints
+
+paths:
+  /auth/v1/signup:
+    post:
+      tags:
+        - Authentication
+      summary: Sign up a new user
+      description: Creates a new user account with email and password
+      operationId: signup
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: user@example.com
+                password:
+                  type: string
+                  format: password
+                  minLength: 6
+                  example: securepassword123
+      responses:
+        '200':
+          description: User successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          description: Invalid request data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /auth/v1/token:
+    post:
+      tags:
+        - Authentication
+      summary: Sign in a user
+      description: Authenticates a user and returns access and refresh tokens
+      operationId: signin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: user@example.com
+                password:
+                  type: string
+                  format: password
+                  example: securepassword123
+      responses:
+        '200':
+          description: Authentication successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /auth/v1/logout:
+    post:
+      tags:
+        - Authentication
+      summary: Sign out a user
+      description: Invalidates the current session
+      operationId: signout
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successfully signed out
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /rest/v1/todos:
+    get:
+      tags:
+        - Todos
+      summary: List todos
+      description: |
+        Retrieves all todos for the authenticated user.
+        Results are ordered by creation date (newest first).
+      operationId: listTodos
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: select
+          in: query
+          description: Columns to select
+          schema:
+            type: string
+            default: '*'
+        - name: order
+          in: query
+          description: Order by column
+          schema:
+            type: string
+            default: created_at.desc
+      responses:
+        '200':
+          description: List of todos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Todo'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    post:
+      tags:
+        - Todos
+      summary: Create a todo
+      description: Creates a new todo for the authenticated user
+      operationId: createTodo
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - title
+              properties:
+                title:
+                  type: string
+                  minLength: 1
+                  example: Buy groceries
+                completed:
+                  type: boolean
+                  default: false
+      responses:
+        '201':
+          description: Todo created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Todo'
+        '400':
+          description: Invalid request data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /rest/v1/todos/{id}:
+    get:
+      tags:
+        - Todos
+      summary: Get a todo
+      description: Retrieves a specific todo by ID
+      operationId: getTodo
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Todo ID
+      responses:
+        '200':
+          description: Todo details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Todo'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Todo not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    patch:
+      tags:
+        - Todos
+      summary: Update a todo
+      description: Updates a todo (partial update supported)
+      operationId: updateTodo
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Todo ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  minLength: 1
+                completed:
+                  type: boolean
+      responses:
+        '200':
+          description: Todo updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Todo'
+        '400':
+          description: Invalid request data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Todo not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    delete:
+      tags:
+        - Todos
+      summary: Delete a todo
+      description: Deletes a todo by ID
+      operationId: deleteTodo
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Todo ID
+      responses:
+        '204':
+          description: Todo deleted successfully
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Todo not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token obtained from authentication endpoints
+
+  schemas:
+    Todo:
+      type: object
+      required:
+        - id
+        - user_id
+        - title
+        - completed
+        - created_at
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the todo
+          example: 123e4567-e89b-12d3-a456-426614174000
+        user_id:
+          type: string
+          format: uuid
+          description: ID of the user who owns this todo
+          example: 123e4567-e89b-12d3-a456-426614174001
+        title:
+          type: string
+          description: Todo title
+          example: Buy groceries
+        completed:
+          type: boolean
+          description: Completion status
+          example: false
+        created_at:
+          type: string
+          format: date-time
+          description: Creation timestamp
+          example: 2024-01-15T10:30:00Z
+
+    AuthResponse:
+      type: object
+      properties:
+        access_token:
+          type: string
+          description: JWT access token
+        refresh_token:
+          type: string
+          description: JWT refresh token
+        expires_in:
+          type: integer
+          description: Token expiration time in seconds
+        token_type:
+          type: string
+          example: bearer
+        user:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+            email:
+              type: string
+              format: email
+            created_at:
+              type: string
+              format: date-time
+
+    Error:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          description: Error message
+          example: Invalid credentials
+        code:
+          type: string
+          description: Error code
+          example: invalid_credentials
+        details:
+          type: string
+          description: Additional error details
