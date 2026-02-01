@@ -15,6 +15,7 @@ A modern Todo application built with React, TypeScript, and Supabase.
 ## Tech Stack
 
 ### Frontend
+
 - **React 18** with Vite
 - **TypeScript**
 - **Tailwind CSS** + **shadcn/ui**
@@ -23,6 +24,7 @@ A modern Todo application built with React, TypeScript, and Supabase.
 - **React Hook Form** + **Zod** for forms and validation
 
 ### Backend
+
 - **Supabase** (PostgreSQL database)
 - **Supabase Auth** for authentication
 - **Row Level Security (RLS)** for authorization
@@ -37,18 +39,19 @@ A modern Todo application built with React, TypeScript, and Supabase.
 ### Setup
 
 1. **Clone the repository**
+
    ```bash
    git clone <repository-url>
    cd todo-app
    ```
 
 2. **Install dependencies**
+
    ```bash
    npm install
    ```
 
 3. **Set up Supabase**
-
    - Create a new Supabase project at [supabase.com](https://supabase.com)
    - Go to your project settings and copy your project URL and anon key
    - Create a `.env` file in the root directory:
@@ -100,6 +103,7 @@ A modern Todo application built with React, TypeScript, and Supabase.
    ```
 
 5. **Start the development server**
+
    ```bash
    npm run dev
    ```
@@ -140,13 +144,13 @@ todo-app/
 
 ### `todos` table
 
-| Column      | Type    | Description                    |
-|-------------|---------|--------------------------------|
-| id          | UUID    | Primary key                    |
-| user_id     | UUID    | Foreign key to auth.users     |
-| title       | TEXT    | Todo title                     |
-| completed   | BOOLEAN | Completion status              |
-| created_at  | TIMESTAMP | Creation timestamp            |
+| Column     | Type      | Description               |
+| ---------- | --------- | ------------------------- |
+| id         | UUID      | Primary key               |
+| user_id    | UUID      | Foreign key to auth.users |
+| title      | TEXT      | Todo title                |
+| completed  | BOOLEAN   | Completion status         |
+| created_at | TIMESTAMP | Creation timestamp        |
 
 ## API Documentation
 
@@ -155,6 +159,7 @@ The backend API is documented using OpenAPI 3.0 specification. The complete API 
 ### Viewing the API Documentation
 
 You can view the API documentation using tools like:
+
 - [Swagger UI](https://swagger.io/tools/swagger-ui/)
 - [Redoc](https://github.com/Redocly/redoc)
 - [Postman](https://www.postman.com/) (import the OpenAPI file)
@@ -164,11 +169,13 @@ You can view the API documentation using tools like:
 The API provides the following endpoints:
 
 **Authentication:**
+
 - `POST /auth/v1/signup` - Create a new user account
 - `POST /auth/v1/token` - Sign in and get access token
 - `POST /auth/v1/logout` - Sign out
 
 **Todos:**
+
 - `GET /rest/v1/todos` - List all todos for the authenticated user
 - `POST /rest/v1/todos` - Create a new todo
 - `GET /rest/v1/todos/{id}` - Get a specific todo

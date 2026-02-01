@@ -3,18 +3,18 @@ info:
   title: Todo App API
   description: |
     API documentation for the Todo App backend powered by Supabase.
-    
+
     This API provides endpoints for user authentication and todo management.
     All endpoints require authentication except for signup and login.
-    
+
     ## Authentication
     All authenticated requests require a Bearer token in the Authorization header:
     ```
     Authorization: Bearer <access_token>
     ```
-    
+
     The access token is obtained through the authentication endpoints.
-    
+
     ## Row Level Security
     All todo operations are protected by Row Level Security (RLS) policies,
     ensuring users can only access their own todos.

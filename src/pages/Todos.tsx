@@ -1,13 +1,15 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { supabase } from '../lib/supabase'
-import { useAuth } from '../contexts/AuthContext'
-import { Button } from '../components/ui/button'
-import { Input } from '../components/ui/input'
-import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
-import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
+
+import { Button } from '../components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
+import { Input } from '../components/ui/input'
+import { useAuth } from '../contexts/AuthContext'
+import { supabase } from '../lib/supabase'
+import { cn } from '../lib/utils'
 
 interface Todo {
   id: string
@@ -34,7 +36,9 @@ async function fetchTodos(): Promise<Todo[]> {
 }
 
 async function createTodo(title: string): Promise<Todo> {
-  const { data: { user } } = await supabase.auth.getUser()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
   if (!user) throw new Error('Not authenticated')
 
   const { data, error } = await supabase
@@ -60,10 +64,7 @@ async function updateTodo(id: string, updates: Partial<Todo>): Promise<Todo> {
 }
 
 async function deleteTodo(id: string): Promise<void> {
-  const { error } = await supabase
-    .from('todos')
-    .delete()
-    .eq('id', id)
+  const { error } = await supabase.from('todos').delete().eq('id', id)
 
   if (error) throw error
 }
@@ -113,8 +114,8 @@ export default function Todos() {
     try {
       await createMutation.mutateAsync(data.title)
       reset()
-    } catch (error) {
-      console.error('Error creating todo:', error)
+    } catch (err) {
+      console.error('Error creating todo:', err)
     }
   }
 
@@ -156,9 +157,7 @@ export default function Todos() {
                   {createMutation.isPending ? 'Adding...' : 'Add'}
                 </Button>
               </div>
-              {errors.title && (
-                <p className="text-sm text-destructive">{errors.title.message}</p>
-              )}
+              {errors.title && <p className="text-sm text-destructive">{errors.title.message}</p>}
             </form>
           </CardContent>
         </Card>
@@ -188,8 +187,8 @@ export default function Todos() {
         </div>
 
         {isLoading ? (
-          <div className="text-center py-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+          <div className="flex justify-center py-8" aria-busy="true" aria-label="Loading todos">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
           </div>
         ) : filteredTodos.length === 0 ? (
           <Card>
@@ -197,8 +196,8 @@ export default function Todos() {
               {filter === 'all'
                 ? 'No todos yet. Add one above!'
                 : filter === 'active'
-                ? 'No active todos. Great job!'
-                : 'No completed todos yet.'}
+                  ? 'No active todos. Great job!'
+                  : 'No completed todos yet.'}
             </CardContent>
           </Card>
         ) : (
@@ -219,11 +218,10 @@ export default function Todos() {
                       className="w-5 h-5 rounded border-gray-300"
                     />
                     <span
-                      className={`flex-1 ${
-                        todo.completed
-                          ? 'line-through text-muted-foreground'
-                          : ''
-                      }`}
+                      className={cn(
+                        'flex-1',
+                        todo.completed && 'line-through text-muted-foreground'
+                      )}
                     >
                       {todo.title}
                     </span>
