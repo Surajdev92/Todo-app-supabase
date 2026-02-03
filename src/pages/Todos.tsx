@@ -156,81 +156,128 @@ export default function Todos() {
   const completedCount = todos.filter((todo) => todo.completed).length
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <div className="container mx-auto px-4 py-8 max-w-2xl">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold">My Todos</h1>
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-muted-foreground">{user?.email}</span>
-            <Button variant="outline" onClick={signOut}>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-slate-100 to-slate-50 text-slate-900">
+      <div className="container mx-auto px-4 py-10 max-w-3xl">
+        <div className="flex items-start justify-between gap-4 mb-8">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-emerald-600">
+              Todo Flow
+            </p>
+            <h1 className="mt-2 text-3xl font-semibold tracking-tight">My Todos</h1>
+            <p className="mt-1 text-sm text-slate-600">
+              Capture tasks, stay focused, and check things off one by one.
+            </p>
+          </div>
+          <div className="flex flex-col items-end gap-2">
+            <div className="inline-flex items-center gap-2 rounded-full bg-white/80 px-3 py-1 text-xs text-slate-700 border border-slate-200">
+              <span className="flex h-2 w-2 rounded-full bg-emerald-500" />
+              <span>{user?.email}</span>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              className="border-slate-300 bg-white/80 hover:bg-slate-100"
+              onClick={signOut}
+            >
               Sign Out
             </Button>
           </div>
         </div>
 
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle>Add New Todo</CardTitle>
+        <Card className="mb-6 border-slate-200/80 bg-white shadow-xl backdrop-blur-xl">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base font-medium text-slate-900">
+              Add a new todo
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
               <div className="flex gap-2">
                 <Input
-                  placeholder="What needs to be done?"
+                  placeholder="What needs to be done today?"
                   {...register('title')}
-                  className="flex-1"
+                  className="flex-1 bg-slate-50 border-slate-200 placeholder:text-slate-400"
                 />
-                <Button type="submit" disabled={createMutation.isPending}>
+                <Button
+                  type="submit"
+                  disabled={createMutation.isPending}
+                  className="shrink-0"
+                >
                   {createMutation.isPending ? 'Adding...' : 'Add'}
                 </Button>
               </div>
               {errors.title && <p className="text-sm text-destructive">{errors.title.message}</p>}
+              <p className="text-xs text-slate-600">
+                Tip: Press{' '}
+                <span className="inline-flex items-center rounded-sm bg-slate-100 px-1.5 py-0.5 text-[0.7rem] font-semibold text-slate-800 border border-slate-200">
+                  Enter
+                </span>{' '}
+                to quickly add your todo.
+              </p>
             </form>
           </CardContent>
         </Card>
 
-        <div className="flex gap-2 mb-4">
-          <Button
-            variant={filter === 'all' ? 'default' : 'outline'}
-            size="sm"
-            onClick={() => setFilter('all')}
-          >
-            All ({todos.length})
-          </Button>
-          <Button
-            variant={filter === 'active' ? 'default' : 'outline'}
-            size="sm"
-            onClick={() => setFilter('active')}
-          >
-            Active ({activeCount})
-          </Button>
-          <Button
-            variant={filter === 'completed' ? 'default' : 'outline'}
-            size="sm"
-            onClick={() => setFilter('completed')}
-          >
-            Completed ({completedCount})
-          </Button>
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+          <div className="inline-flex rounded-full bg-white/80 p-1 border border-slate-200">
+            <Button
+              variant={filter === 'all' ? 'default' : 'outline'}
+              size="sm"
+              className={`rounded-full border-none ${filter !== 'all' ? 'bg-transparent' : ''}`}
+              onClick={() => setFilter('all')}
+            >
+              All ({todos.length})
+            </Button>
+            <Button
+              variant={filter === 'active' ? 'default' : 'outline'}
+              size="sm"
+              className={`rounded-full border-none ${filter !== 'active' ? 'bg-transparent' : ''}`}
+              onClick={() => setFilter('active')}
+            >
+              Active ({activeCount})
+            </Button>
+            <Button
+              variant={filter === 'completed' ? 'default' : 'outline'}
+              size="sm"
+              className={`rounded-full border-none ${filter !== 'completed' ? 'bg-transparent' : ''}`}
+              onClick={() => setFilter('completed')}
+            >
+              Completed ({completedCount})
+            </Button>
+          </div>
+          <div className="flex gap-2 text-xs text-slate-700">
+            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-1">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+              <span>{activeCount} active</span>
+            </span>
+            <span className="inline-flex items-center gap-1 rounded-full bg-slate-200 px-2 py-1">
+              <span className="h-1.5 w-1.5 rounded-full bg-slate-500" />
+              <span>{completedCount} completed</span>
+            </span>
+          </div>
         </div>
 
         {isLoading ? (
-          <div className="flex justify-center py-8" aria-busy="true" aria-label="Loading todos">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+          <div className="flex justify-center py-12" aria-busy="true" aria-label="Loading todos">
+            <div className="h-9 w-9 animate-spin rounded-full border-2 border-emerald-500 border-t-transparent" />
           </div>
         ) : filteredTodos.length === 0 ? (
-          <Card>
-            <CardContent className="py-8 text-center text-muted-foreground">
+          <Card className="border-dashed border-slate-300 bg-white/90 backdrop-blur-xl">
+            <CardContent className="py-10 text-center text-slate-600">
               {filter === 'all'
-                ? 'No todos yet. Add one above!'
+                ? 'No todos yet. Add one above to get started!'
                 : filter === 'active'
-                  ? 'No active todos. Great job!'
-                  : 'No completed todos yet.'}
+                  ? 'No active todos. Enjoy the calm!'
+                  : 'No completed todos yet. Check off your first task!'}
             </CardContent>
           </Card>
         ) : (
-          <div className="space-y-2">
+          <div className="space-y-3">
             {filteredTodos.map((todo) => (
-              <Card key={todo.id}>
+              <Card
+                key={todo.id}
+                className="border-slate-200/80 bg-white/95 shadow-md backdrop-blur-xl transition hover:-translate-y-0.5 hover:shadow-lg"
+              >
                 <CardContent className="p-4">
                   {editingId === todo.id ? (
                     <div className="flex items-center gap-2">
