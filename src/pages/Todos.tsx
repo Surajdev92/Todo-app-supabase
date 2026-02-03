@@ -9,7 +9,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
 import { Input } from '../components/ui/input'
 import { useAuth } from '../contexts/AuthContext'
 import { supabase } from '../lib/supabase'
-import { cn } from '../lib/utils'
 
 interface Todo {
   id: string
@@ -73,6 +72,8 @@ export default function Todos() {
   const { user, signOut } = useAuth()
   const queryClient = useQueryClient()
   const [filter, setFilter] = useState<'all' | 'active' | 'completed'>('all')
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const [editTitle, setEditTitle] = useState('')
 
   const { data: todos = [], isLoading } = useQuery({
     queryKey: ['todos'],
@@ -117,6 +118,32 @@ export default function Todos() {
     } catch (err) {
       console.error('Error creating todo:', err)
     }
+  }
+
+  const handleEdit = (todo: Todo) => {
+    setEditingId(todo.id)
+    setEditTitle(todo.title)
+  }
+
+  const handleSaveEdit = async (id: string) => {
+    if (!editTitle.trim()) {
+      return
+    }
+    try {
+      await updateMutation.mutateAsync({
+        id,
+        updates: { title: editTitle.trim() },
+      })
+      setEditingId(null)
+      setEditTitle('')
+    } catch (error) {
+      console.error('Error updating todo:', error)
+    }
+  }
+
+  const handleCancelEdit = () => {
+    setEditingId(null)
+    setEditTitle('')
   }
 
   const filteredTodos = todos.filter((todo) => {
@@ -205,35 +232,78 @@ export default function Todos() {
             {filteredTodos.map((todo) => (
               <Card key={todo.id}>
                 <CardContent className="p-4">
-                  <div className="flex items-center gap-3">
-                    <input
-                      type="checkbox"
-                      checked={todo.completed}
-                      onChange={(e) => {
-                        updateMutation.mutate({
-                          id: todo.id,
-                          updates: { completed: e.target.checked },
-                        })
-                      }}
-                      className="w-5 h-5 rounded border-gray-300"
-                    />
-                    <span
-                      className={cn(
-                        'flex-1',
-                        todo.completed && 'line-through text-muted-foreground'
-                      )}
-                    >
-                      {todo.title}
-                    </span>
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      onClick={() => deleteMutation.mutate(todo.id)}
-                      disabled={deleteMutation.isPending}
-                    >
-                      Delete
-                    </Button>
-                  </div>
+                  {editingId === todo.id ? (
+                    <div className="flex items-center gap-2">
+                      <Input
+                        value={editTitle}
+                        onChange={(e) => setEditTitle(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            handleSaveEdit(todo.id)
+                          } else if (e.key === 'Escape') {
+                            handleCancelEdit()
+                          }
+                        }}
+                        className="flex-1"
+                        autoFocus
+                      />
+                      <Button
+                        size="sm"
+                        onClick={() => handleSaveEdit(todo.id)}
+                        disabled={!editTitle.trim() || updateMutation.isPending}
+                      >
+                        {updateMutation.isPending ? 'Saving...' : 'Save'}
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handleCancelEdit}
+                        disabled={updateMutation.isPending}
+                      >
+                        Cancel
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="checkbox"
+                        checked={todo.completed}
+                        onChange={(e) => {
+                          updateMutation.mutate({
+                            id: todo.id,
+                            updates: { completed: e.target.checked },
+                          })
+                        }}
+                        className="w-5 h-5 rounded border-gray-300"
+                        disabled={updateMutation.isPending}
+                      />
+                      <span
+                        className={`flex-1 ${
+                          todo.completed
+                            ? 'line-through text-muted-foreground'
+                            : ''
+                        }`}
+                      >
+                        {todo.title}
+                      </span>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleEdit(todo)}
+                        disabled={updateMutation.isPending || deleteMutation.isPending}
+                      >
+                        Edit
+                      </Button>
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => deleteMutation.mutate(todo.id)}
+                        disabled={deleteMutation.isPending || updateMutation.isPending}
+                      >
+                        Delete
+                      </Button>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             ))}
