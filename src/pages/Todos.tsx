@@ -219,7 +219,7 @@ export default function Todos() {
   }
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-slate-50 via-slate-100 to-slate-50 text-slate-900">
+    <div className="relative min-h-screen bg-gradient-to-br from-slate-50 via-slate-100 to-slate-50 text-slate-900">
       <div className="pointer-events-none absolute inset-0 z-10">
         <div className="absolute -top-32 -left-32 h-80 w-80 rounded-full bg-emerald-400/20 blur-3xl animate-pulse" />
         <div className="absolute bottom-[-120px] right-[-80px] h-96 w-96 rounded-full bg-sky-400/20 blur-3xl animate-[spin_40s_linear_infinite]" />
@@ -265,8 +265,9 @@ export default function Todos() {
               layout
               transition={{ type: 'spring', stiffness: 260, damping: 24 }}
               whileHover={{ y: -2 }}
+              className="sticky top-4 z-20 mb-6"
             >
-              <Card className="mb-6 border-slate-200/80 bg-white/95 shadow-2xl backdrop-blur-xl relative overflow-hidden">
+              <Card className="border-slate-200/80 bg-white/95 shadow-2xl backdrop-blur-xl relative overflow-hidden">
                 {/* Subtle gradient overlay */}
                 <div className="absolute inset-0 bg-gradient-to-r from-emerald-50/30 via-transparent to-sky-50/30 pointer-events-none" />
 
@@ -558,7 +559,7 @@ export default function Todos() {
           </div>
 
           <motion.aside
-            className="lg:w-80 lg:sticky lg:top-10 space-y-4"
+            className="lg:w-80 lg:sticky lg:top-4 lg:self-start lg:z-20 space-y-4"
             initial={{ opacity: 0, x: 32 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}

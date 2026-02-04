@@ -6,7 +6,7 @@ export function AILoadingAnimation() {
       {[0, 1, 2].map((index) => (
         <motion.div
           key={index}
-          className="h-2 w-2 rounded-full bg-emerald-500"
+          className="h-2 w-2 rounded-full bg-white"
           animate={{
             scale: [1, 1.5, 1],
             opacity: [0.5, 1, 0.5],
@@ -20,7 +20,7 @@ export function AILoadingAnimation() {
         />
       ))}
       <motion.span
-        className="ml-2 text-xs text-emerald-600"
+        className="ml-2 text-sm text-white"
         animate={{ opacity: [0.5, 1, 0.5] }}
         transition={{
           duration: 1.5,
