@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form'
 import { Link, useNavigate } from 'react-router-dom'
 import { z } from 'zod'
 
+import { AuthBackground } from '../components/AuthBackground'
 import { Button } from '../components/ui/button'
 import {
   Card,
@@ -62,14 +63,11 @@ export default function Login() {
   }
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center px-4 bg-gradient-to-br from-slate-50 via-slate-100 to-slate-50 text-slate-900">
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute -top-32 -left-40 h-72 w-72 rounded-full bg-emerald-400/25 blur-3xl animate-pulse" />
-        <div className="absolute -bottom-40 -right-32 h-80 w-80 rounded-full bg-sky-400/25 blur-3xl animate-[spin_40s_linear_infinite]" />
-      </div>
+    <div className="relative min-h-screen flex items-center justify-center px-4 text-slate-900">
+      <AuthBackground />
 
       <motion.div
-        className="relative w-full max-w-md"
+        className="relative z-10 w-full max-w-md"
         initial={{ opacity: 0, y: 24, scale: 0.98 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.6, ease: 'easeOut' }}
@@ -100,9 +98,7 @@ export default function Login() {
                   autoComplete="email"
                   {...register('email')}
                 />
-                {errors.email && (
-                  <p className="text-sm text-destructive">{errors.email.message}</p>
-                )}
+                {errors.email && <p className="text-sm text-destructive">{errors.email.message}</p>}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>
