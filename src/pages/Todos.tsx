@@ -220,7 +220,7 @@ export default function Todos() {
 
   return (
     <div className="relative min-h-screen bg-gradient-to-br from-slate-50 via-slate-100 to-slate-50 text-slate-900">
-      <div className="pointer-events-none absolute inset-0 z-10">
+      <div className="pointer-events-none absolute inset-0 z-10 overflow-hidden">
         <div className="absolute -top-32 -left-32 h-80 w-80 rounded-full bg-emerald-400/20 blur-3xl animate-pulse" />
         <div className="absolute bottom-[-120px] right-[-80px] h-96 w-96 rounded-full bg-sky-400/20 blur-3xl animate-[spin_40s_linear_infinite]" />
         <div className="absolute top-1/2 left-1/2 h-64 w-64 -translate-x-1/2 -translate-y-1/2 rounded-full bg-emerald-300/10 blur-3xl" />
@@ -234,7 +234,7 @@ export default function Todos() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: 'easeOut' }}
         >
-          <div className="flex-1">
+          <div className="min-w-0 flex-1">
             <div className="flex items-start justify-between gap-4 mb-8">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.3em] text-emerald-600">
@@ -295,9 +295,9 @@ export default function Todos() {
                 </CardHeader>
                 <CardContent className="relative z-10">
                   <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
-                    <div className="flex gap-2">
+                    <div className="flex min-w-0 gap-2">
                       <motion.div
-                        className="flex-1"
+                        className="min-w-0 flex-1"
                         whileFocus={{ scale: 1.01 }}
                         transition={{ type: 'spring', stiffness: 400, damping: 25 }}
                       >
@@ -468,7 +468,7 @@ export default function Todos() {
                             <motion.div
                               initial={{ opacity: 0, scale: 0.95 }}
                               animate={{ opacity: 1, scale: 1 }}
-                              className="flex items-center gap-2"
+                              className="flex min-w-0 items-center gap-2"
                             >
                               <Input
                                 value={editTitle}
@@ -480,7 +480,7 @@ export default function Todos() {
                                     handleCancelEdit()
                                   }
                                 }}
-                                className="flex-1"
+                                className="min-w-0 flex-1"
                                 autoFocus
                               />
                               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
@@ -559,7 +559,7 @@ export default function Todos() {
           </div>
 
           <motion.aside
-            className="lg:w-80 lg:sticky lg:top-4 lg:self-start lg:z-20 space-y-4"
+            className="min-w-0 shrink-0 space-y-4 lg:sticky lg:top-4 lg:z-20 lg:w-80 lg:self-start"
             initial={{ opacity: 0, x: 32 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
