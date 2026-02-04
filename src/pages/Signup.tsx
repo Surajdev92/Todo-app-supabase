@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod'
+import { motion } from 'framer-motion'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { Link, useNavigate } from 'react-router-dom'
@@ -68,19 +69,25 @@ export default function Signup() {
 
   return (
     <div className="relative min-h-screen flex items-center justify-center px-4 bg-gradient-to-br from-slate-50 via-slate-100 to-slate-50 text-slate-900">
-      {/* Decorative background glows */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 right-[-120px] h-80 w-80 rounded-full bg-emerald-400/18 blur-3xl" />
-        <div className="absolute -bottom-40 left-[-120px] h-80 w-80 rounded-full bg-violet-400/18 blur-3xl" />
+        <div className="absolute -top-40 right-[-120px] h-80 w-80 rounded-full bg-emerald-400/22 blur-3xl animate-pulse" />
+        <div className="absolute -bottom-40 left-[-120px] h-80 w-80 rounded-full bg-violet-500/22 blur-3xl animate-[spin_40s_linear_infinite]" />
       </div>
 
-      <div className="relative w-full max-w-md">
-        <Card className="w-full border-slate-200/80 bg-white/90 shadow-2xl backdrop-blur-xl">
+      <motion.div
+        className="relative w-full max-w-md"
+        initial={{ opacity: 0, y: 24, scale: 0.98 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.6, ease: 'easeOut' }}
+      >
+        <Card className="w-full border-slate-200/80 bg-white/95 shadow-2xl backdrop-blur-2xl">
           <CardHeader className="space-y-3">
             <p className="text-xs font-semibold uppercase tracking-[0.3em] text-emerald-600">
               Todo Flow
             </p>
-            <CardTitle className="text-2xl font-semibold">Create your account</CardTitle>
+            <CardTitle className="text-2xl font-semibold text-slate-900">
+              Create your account
+            </CardTitle>
             <CardDescription className="text-sm text-slate-600">
               Sign up in seconds and start capturing what matters today.
             </CardDescription>
@@ -101,7 +108,9 @@ export default function Signup() {
                   autoComplete="email"
                   {...register('email')}
                 />
-                {errors.email && <p className="text-sm text-destructive">{errors.email.message}</p>}
+                {errors.email && (
+                  <p className="text-sm text-destructive">{errors.email.message}</p>
+                )}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>
@@ -131,11 +140,7 @@ export default function Signup() {
               </div>
             </CardContent>
             <CardFooter className="flex flex-col space-y-4">
-              <Button
-                type="submit"
-                className="w-full"
-                disabled={loading}
-              >
+              <Button type="submit" className="w-full" disabled={loading}>
                 {loading ? 'Creating account...' : 'Sign Up'}
               </Button>
               <p className="text-sm text-center text-slate-600">
@@ -147,7 +152,7 @@ export default function Signup() {
             </CardFooter>
           </form>
         </Card>
-      </div>
+      </motion.div>
     </div>
   )
 }
